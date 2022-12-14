@@ -1,0 +1,72 @@
+services:
+  bitcoind:
+    container_name: bitcoin
+    image: ruimarinho/bitcoin-core:latest
+    command: -printtoconsole
+    volumes:
+      - /Users/maxvalenko/Library/Application Support/Bitcoin:/home/bitcoin/.bitcoin
+    ports:
+      - 18332:18332
+      # ZMQ
+      - 28332:28332
+      - 28333:28333
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+
+  # app:
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #   image: app:latest
+  #   env_file:
+  #     - .env.local
+  #   ports:
+  #     - 3000:3000
+
+  # tracker:
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #     bitcoind:
+  #       condition: service_started
+  #   image: tracker:latest
+  #   env_file:
+  #     - .env.local
+
+  postgres:
+    image: postgres:11
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: regtest
+    healthcheck:
+      test: "pg_isready"
+      timeout: 10s
+      retries: 20
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - "5500:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+    restart: unless-stopped

@@ -1,0 +1,21 @@
+mutation CreateBitcoinPaymentRequest(
+  $address: String!
+  $amount: BigInt!
+  $feeRate: Float!
+  $walletId: String!
+  $accountIndex: Int!
+  $memo: String
+  $maxOut: Boolean
+) {
+  createBitcoinPaymentRequest(
+    address: $address
+    amount: $amount
+    feeRate: $feeRate
+    walletId: $walletId
+    accountIndex: $accountIndex
+    memo: $memo
+    maxOut: $maxOut
+  ) {
+    ...BitcoinPaymentRequestShared
+  }
+}

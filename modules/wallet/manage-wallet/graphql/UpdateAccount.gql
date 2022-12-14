@@ -1,0 +1,8 @@
+mutation UpdateAccount($walletId: String!, $index: Int!, $name: String, $payLink: String) {
+  updateAccount(walletId: $walletId, index: $index, name: $name, payLink: $payLink) {
+    walletId
+    index
+    name
+    payLink
+  }
+}

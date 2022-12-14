@@ -1,0 +1,9 @@
+mutation UpdateBitcoinPaymentRequest(
+  $id: String!
+  $psbt: String
+  $memo: String
+) {
+  updateBitcoinPaymentRequest(id: $id, psbt: $psbt, memo: $memo) {
+    ...BitcoinPaymentRequestShared
+  }
+}

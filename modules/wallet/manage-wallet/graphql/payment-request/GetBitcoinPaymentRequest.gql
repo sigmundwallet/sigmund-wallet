@@ -1,0 +1,5 @@
+query GetBitcoinPaymentRequest($id: String!) {
+  bitcoinPaymentRequest(id: $id) {
+    ...BitcoinPaymentRequestShared
+  }
+}

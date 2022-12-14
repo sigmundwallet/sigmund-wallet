@@ -1,0 +1,15 @@
+query GetKey($keyId: String!) {
+  key(keyId: $keyId) {
+    id
+    walletId
+    lastVerifiedAt
+    name
+    ownershipType
+    blockchainType
+    signatures {
+      expiresAt
+      id
+      signedWith
+    }
+  }
+}

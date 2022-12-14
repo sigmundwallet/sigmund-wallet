@@ -1,0 +1,6 @@
+mutation CreateSignMessageRequest {
+  createSignMessageRequest {
+    derivationPath
+    id
+  }
+}

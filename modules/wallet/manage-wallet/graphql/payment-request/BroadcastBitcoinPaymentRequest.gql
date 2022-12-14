@@ -1,0 +1,5 @@
+mutation BroadcastBitcoinPaymentRequest($id: String!) {
+  broadcastBitcoinPaymentRequest(id: $id) {
+    ...BitcoinPaymentRequestShared
+  }
+}

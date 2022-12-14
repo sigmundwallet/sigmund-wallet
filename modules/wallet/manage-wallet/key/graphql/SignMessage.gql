@@ -1,0 +1,3 @@
+mutation SignMessage($msg: String!, $signature: String!, $keyId: String) {
+  signMessage(msg: $msg, signature: $signature, keyId: $keyId)
+}

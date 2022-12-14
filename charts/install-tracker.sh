@@ -1,0 +1,1 @@
+helm upgrade --install sigmundwallet-tracker ./sigmund-wallet-tracker 

@@ -1,0 +1,13 @@
+subscription GetWalletBalance($walletId: String!, $accountIndex: Int!) {
+  bitcoinWalletBalance(walletId: $walletId, accountIndex: $accountIndex) {
+    confirmed
+    unconfirmed
+  }
+}
+
+query GetWalletBalanceQuery($walletId: String!, $accountIndex: Int!) {
+  bitcoinWalletBalance(walletId: $walletId, accountIndex: $accountIndex) {
+    confirmed
+    unconfirmed
+  }
+}

@@ -1,0 +1,11 @@
+fragment PlatformKeySignRequestShared on PlatformKeySignRequest {
+  id
+  platformKey {
+    verificationType
+    quizQuestions
+  }
+  willSignAt
+  signedAt
+  expiresAt
+  isExpired
+}

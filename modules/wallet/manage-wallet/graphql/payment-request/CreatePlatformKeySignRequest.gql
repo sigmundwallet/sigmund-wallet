@@ -1,0 +1,11 @@
+mutation CreatePlatformKeySignRequest(
+  $keyId: String!
+  $bitcoinPaymentRequestId: String
+) {
+  createPlatformKeySignRequest(
+    keyId: $keyId
+    bitcoinPaymentRequestId: $bitcoinPaymentRequestId
+  ) {
+   ...PlatformKeySignRequestShared
+  }
+}

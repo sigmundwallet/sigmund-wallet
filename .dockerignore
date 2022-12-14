@@ -1,0 +1,6 @@
+.localtest
+.next
+node_modules
+pgadmin-data
+postgres-data
+.env.local

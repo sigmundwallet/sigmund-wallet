@@ -1,0 +1,25 @@
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '300'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '300'
+    kubernetes.io/ingress.class: 'nginx'
+    ingress.kubernetes.io/ssl-redirect: 'true'
+    cert-manager.io/cluster-issuer: letsencrypt-dev
+  hosts:
+    - host: testnet.sigmundwallet.com
+      paths:
+        - path: '/'
+          pathType: Prefix
+  tls:
+    - secretName: sigmundwallet-app-testnet-tls
+      hosts:
+        - testnet.sigmundwallet.com
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi

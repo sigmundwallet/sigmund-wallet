@@ -1,0 +1,15 @@
+query GetPlatformKeyBilling($keyId: String!) {
+  platformKeyBilling(keyId: $keyId) {
+    keyId
+    billingAddress
+    paidUntil
+    billing {
+      amountPaid
+      basePrice
+      createdAt
+      discountPrice
+      id
+      monthsPaid
+    }
+  }
+}

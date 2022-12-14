@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "sigmund-wallet-tracker.fullname" . }}-test-connection"
+  labels:
+    {{- include "sigmund-wallet-tracker.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "sigmund-wallet-tracker.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sigmundwallet-app-config
+data:
+  BITCOIN_NETWORK: "testnet"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  EMAIL_FROM: "no-reply-testnet@sigmundwallet.com"
+  TRIAL_PERIOD_DAYS: "7"
+  MONTHLY_PRICE_SATS: "250"
+
+  NEXT_PUBLIC_DEPLOYMENT_URL: "http://localhost:3000"
+  NEXT_PUBLIC_BITCOIN_NETWORK: "testnet"
+  NEXT_PUBLIC_BITCOIN_EXPLORER_URL: "https://mempool.space/testnet"
+  NEXT_PUBLIC_MONTHLY_PRICE_SATS: "250"

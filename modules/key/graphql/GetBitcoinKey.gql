@@ -1,0 +1,9 @@
+query GetBitcoinKey($keyId: String!) {
+  bitcoinKey(keyId: $keyId) {
+    id
+    derivationPath
+    masterFingerprint
+    publicKey
+    walletType
+  }
+}

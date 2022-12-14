@@ -1,0 +1,31 @@
+query GetWallet($id: String!) {
+  wallet(id: $id) {
+    id
+    name
+    type
+    threshold
+    accounts {
+      walletId
+      index
+      name
+      payLink
+      receiveBitcoinAddress
+      bitcoinPaymentRequests {
+        id
+        amount
+        address
+        memo
+      }
+    }
+    keys {
+      id
+      ownershipType
+      lastVerifiedAt
+      name
+      signatures {
+        id
+        expiresAt
+      }
+    }
+  }
+}

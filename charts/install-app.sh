@@ -1,0 +1,1 @@
+helm upgrade --install -f sigmund-wallet-app/testnet.yaml sigmundwallet-app ./sigmund-wallet-app

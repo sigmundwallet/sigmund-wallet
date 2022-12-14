@@ -1,0 +1,3 @@
+mutation DeletePlatformKeySignRequest($id: String!) {
+  deletePlatformKeySignRequest(id: $id)
+}

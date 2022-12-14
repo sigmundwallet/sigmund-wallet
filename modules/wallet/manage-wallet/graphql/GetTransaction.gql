@@ -1,0 +1,34 @@
+query GetTransaction($txHash: String!) {
+  transaction(txHash: $txHash) {
+    height
+    txHash
+    blockTimestamp
+    inputs {
+      txPos
+      value
+      spentInTransaction {
+        blockTimestamp
+        outputs {
+          value
+          bitcoinAddress {
+            address
+            account {
+              walletId
+              index
+            }
+          }
+        }
+      }
+    }
+    outputs {
+      value
+      bitcoinAddress {
+        address
+        account {
+          walletId
+          index
+        }
+      }
+    }
+  }
+}

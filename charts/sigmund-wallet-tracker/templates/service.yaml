@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sigmund-wallet-tracker.fullname" . }}
+  labels:
+    {{- include "sigmund-wallet-tracker.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "sigmund-wallet-tracker.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,9 @@
+query GetRecoveryInfo($accountIndex: Int!, $walletId: String!) {
+  recoveryInfo(accountIndex: $accountIndex, walletId: $walletId) {
+    type
+    publicKey
+    derivationPath
+    masterFingerprint
+    walletType
+  }
+}

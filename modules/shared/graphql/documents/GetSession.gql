@@ -1,0 +1,12 @@
+query GetSession {
+  session {
+    expiresAt
+    id
+    signMessageRequests {
+      expiresAt
+      id
+      signedWith
+    }
+    walletId
+  }
+}

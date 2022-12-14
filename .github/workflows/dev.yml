@@ -1,0 +1,31 @@
+name: Build and Publish (TESTNET)
+
+on: workflow_dispatch
+
+env:
+  REGISTRY: ${{ vars.DO_DOCKER_REGISTRY }}
+  IMAGE_NAME: app
+  IMAGE_TAG: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker Login
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DO_DOCKER_TOKEN }}
+          password: ${{ secrets.DO_DOCKER_TOKEN }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4.0.0
+        with:
+          context: .
+          build-args: |
+            NEXT_PUBLIC_BITCOIN_NETWORK=testnet
+            NEXT_PUBLIC_BITCOIN_EXPLORER_URL=https://mempool.space/testnet
+            NEXT_PUBLIC_DEPLOYMENT_URL=https://testnet.sigmundwallet.com
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          push: true

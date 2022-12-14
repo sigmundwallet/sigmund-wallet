@@ -1,0 +1,3 @@
+mutation RemoveBitcoinPaymentRequest($id: String!) {
+  removeBitcoinPaymentRequest(id: $id)
+}

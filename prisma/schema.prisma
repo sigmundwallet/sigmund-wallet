@@ -1,0 +1,280 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByNulls"]
+  binaryTargets   = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  id             String         @id
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  type           BlockchainType
+  name           String         @default("Wallet")
+  threshold      Int            @default(0)
+  allowWatchMode Boolean        @default(false)
+
+  notifyEmails                   String[]
+  notifyOnSign                   Boolean  @default(false)
+  notifyOnSend                   Boolean  @default(false)
+  notifyOnReceive                Boolean  @default(false)
+  notifyOnVerify                 Boolean  @default(false)
+  notifyOnPlatformKeySignRequest Boolean  @default(false)
+  notifyOnPlatformKeySign        Boolean  @default(false)
+
+  keys                GenericKey[]
+  SignMessageRequests SignMessageRequest[]
+  Accounts            Account[]
+  Session             Session[]
+  EmailVerification   EmailVerification[]
+}
+
+model Account {
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  name                   String
+  index                  Int
+  wallet                 Wallet                  @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId               String
+  bitcoinPaymentRequests BitcoinPaymentRequest[]
+  bitcoinAddresses       BitcoinAddress[]
+  payLink                String?                 @unique
+
+  @@id([walletId, index])
+}
+
+model SignMessageRequest {
+  id             String      @id @default(uuid())
+  createdAt      DateTime    @default(now())
+  expiresAt      DateTime
+  derivationPath String
+  wallet         Wallet      @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId       String
+  signedWith     GenericKey? @relation(fields: [genericKeyId], references: [id])
+  genericKeyId   String?
+  Session        Session?    @relation(fields: [sessionId], references: [id])
+  sessionId      String?
+}
+
+model Session {
+  id                  String               @id @default(uuid())
+  createdAt           DateTime             @default(now())
+  wallet              Wallet               @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId            String
+  expiresAt           DateTime?
+  signMessageRequests SignMessageRequest[]
+}
+
+model UserKeyVerification {
+  id             String    @id @default(uuid())
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime
+  verified       Boolean   @default(false)
+  verifiedAt     DateTime?
+  derivationPath String?
+  xpub           String?
+}
+
+model EmailVerification {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  email      String
+  code       String
+  verified   Boolean   @default(false)
+  verifiedAt DateTime?
+
+  Wallet   Wallet? @relation(fields: [walletId], references: [id])
+  walletId String?
+}
+
+model BitcoinAddress {
+  id               String          @id @default(uuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  derivationIndex  Int
+  address          String          @unique
+  change           Boolean         @default(false)
+  label            String?
+  lastStatus       String?
+  baseXpub         String?
+  outputs          BitcoinOutput[]
+  Account          Account         @relation(fields: [walletId, accountIndex], references: [walletId, index])
+  walletId         String
+  accountIndex     Int
+  PlatformKey      PlatformKey?    @relation(fields: [platformKeyKeyId], references: [keyId])
+  platformKeyKeyId String?
+}
+
+model BitcoinTransaction {
+  // TODO rename to ID
+  txHash                String                   @id
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  data                  String
+  height                Int?
+  blockTimestamp        DateTime?
+  locktime              BigInt
+  version               Int
+  label                 String?
+  error                 String?
+  source                BitcoinTransactionSource
+  outputs               BitcoinOutput[]
+  inputs                BitcoinOutput[]          @relation(name: "SpentInTx")
+  BitcoinPaymentRequest BitcoinPaymentRequest[]
+}
+
+model BitcoinOutput {
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+  txHash                   String
+  txPos                    Int
+  value                    BigInt
+  scriptPubKey             String
+  scripthash               String
+  BitcoinAddress           BitcoinAddress?     @relation(fields: [bitcoinAddressId], references: [id], onDelete: Cascade)
+  bitcoinAddressId         String?
+  BitcoinTransaction       BitcoinTransaction? @relation(fields: [bitcoinTransactionTxHash], references: [txHash], onDelete: Cascade)
+  bitcoinTransactionTxHash String?
+  spentInTransaction       BitcoinTransaction? @relation(name: "SpentInTx", fields: [spentInTransactionTxHash], references: [txHash], onDelete: Cascade)
+  spentInTransactionTxHash String?
+
+  @@id([txHash, txPos])
+}
+
+model GenericKey {
+  id                     String                  @id @default(uuid())
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  lastVerifiedAt         DateTime                @default(now())
+  name                   String?
+  wallet                 Wallet                  @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId               String
+  order                  Int                     @default(0)
+  ownershipType          KeyOwnerShipType
+  blockchainType         BlockchainType
+  platformKey            PlatformKey?
+  userKey                UserKey?
+  bitcoinKey             BitcoinKey?
+  bitcoinPaymentRequests BitcoinPaymentRequest[]
+  SignMessageRequests    SignMessageRequest[]
+}
+
+model PlatformKey {
+  keyId                  String                      @id @unique
+  updatedAt              DateTime                    @updatedAt
+  Key                    GenericKey                  @relation(fields: [keyId], references: [id], onDelete: Cascade)
+  verificationType       PlatformKeyVerificationType @default(QUIZ)
+  verificationPediod     Int                         @default(604800) // 1 week in seconds
+  quizQuestions          String[]
+  quizAnswerHash         String?
+  billingUpdatedAt       DateTime                    @default(now())
+  paidUntil              DateTime
+  BitcoinAddresses       BitcoinAddress[]
+  PlatformKeySignRequest PlatformKeySignRequest[]
+  PlatformKeyBilling     PlatformKeyBilling[]
+}
+
+model PlatformKeyBilling {
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now())
+  basePrice     Int
+  discountPrice Int
+  amountPaid    Int
+  monthsPaid    Int
+  PlatformKey   PlatformKey @relation(fields: [platformKeyId], references: [keyId], onDelete: Cascade)
+  platformKeyId String
+}
+
+model UserKey {
+  keyId String     @id @unique
+  Key   GenericKey @relation(fields: [keyId], references: [id], onDelete: Cascade)
+}
+
+model BitcoinKey {
+  keyId             String     @id @unique
+  Key               GenericKey @relation(fields: [keyId], references: [id], onDelete: Cascade)
+  privateKey        String? /// @encrypted
+  masterFingerprint String
+  publicKey         String
+  derivationPath    String
+  walletType        String
+}
+
+model BitcoinChainInfo {
+  id        BlockchainType @id
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  usdPrice  Float?
+  feeRates  Float[]
+  lastBlock Int            @default(0)
+}
+
+model BitcoinPaymentRequest {
+  id                       String                  @id @default(uuid())
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+  address                  String
+  amount                   BigInt
+  fee                      BigInt
+  psbt                     String
+  originalPsbt             String
+  memo                     String?
+  isBillingAddress         Boolean                 @default(false)
+  signedWithKeys           GenericKey[]
+  BitcoinTransaction       BitcoinTransaction?     @relation(fields: [bitcoinTransactionTxHash], references: [txHash])
+  bitcoinTransactionTxHash String?
+  PlatformKeySignRequest   PlatformKeySignRequest?
+  Account                  Account                 @relation(fields: [walletId, accountIndex], references: [walletId, index])
+  walletId                 String
+  accountIndex             Int
+}
+
+model PlatformKeySignRequest {
+  id                    String                 @id @default(uuid())
+  createdAt             DateTime               @default(now())
+  expiresAt             DateTime
+  willSignAt            DateTime?
+  signedAt              DateTime?
+  PlatformKey           PlatformKey            @relation(fields: [platformKeyId], references: [keyId], onDelete: Cascade)
+  platformKeyId         String
+  BitcoinPaymentRequest BitcoinPaymentRequest? @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+  paymentRequestId      String?                @unique
+}
+
+// ENUMS
+
+enum BlockchainType {
+  Bitcoin
+  BitcoinTestnet
+  BitcoinRegtest
+  Liquid
+}
+
+enum PlatformKeyVerificationType {
+  QUIZ
+  EMAIL
+  SMS
+}
+
+enum KeyOwnerShipType {
+  PLATFORM
+  USER
+}
+
+enum BitcoinTransactionSource {
+  APP
+  MEMPOOL
+  BLOCK
+}

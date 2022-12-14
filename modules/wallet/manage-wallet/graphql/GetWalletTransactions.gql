@@ -1,0 +1,29 @@
+query GetWalletTransactions($walletId: String!, $accountIndex: Int!) {
+  walletTransactions(walletId: $walletId, accountIndex: $accountIndex) {
+    height
+    txHash
+    blockTimestamp
+    label
+    inputs {
+      txPos
+      value
+      bitcoinAddress {
+        address
+        account {
+          walletId
+          index
+        }
+      }
+    }
+    outputs {
+      value
+      bitcoinAddress {
+        address
+        account {
+          walletId
+          index
+        }
+      }
+    }
+  }
+}

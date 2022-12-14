@@ -1,0 +1,7 @@
+mutation ConfirmPlatformKeySignRequest($id: String!, $verification: [String!]!) {
+  confirmPlatformKeySignRequest(id: $id, verification: $verification) {
+    id
+    willSignAt
+    signedAt
+  }
+}

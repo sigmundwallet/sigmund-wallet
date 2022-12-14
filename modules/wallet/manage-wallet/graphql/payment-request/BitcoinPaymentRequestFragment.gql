@@ -1,0 +1,21 @@
+fragment BitcoinPaymentRequestShared on BitcoinPaymentRequest {
+  id
+  address
+  amount
+  fee
+  memo
+  psbt
+  signedWithKeys {
+    id
+    name
+    ownershipType
+  }
+  signRequest {
+    ...PlatformKeySignRequestShared
+  }
+  transaction {
+    txHash
+    source
+    error
+  }
+}

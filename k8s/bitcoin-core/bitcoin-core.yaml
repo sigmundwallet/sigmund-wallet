@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitcoin-core-deployment
+  labels:
+    app: bitcoin-core-app
+    tier: bitcoin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitcoin-core-app
+  template:
+    metadata:
+      labels:
+        app: bitcoin-core-app
+        tier: bitcoin
+    spec:
+      volumes:
+        - name: bitcoin-core-pv-storage
+          persistentVolumeClaim:
+            claimName: bitcoin-core-pv-claim
+      containers:
+        - name: bitcoin-core
+          image: "ruimarinho/bitcoin-core:latest"
+          imagePullPolicy: IfNotPresent
+          args:
+            - -testnet=1
+            - -upnp=0
+            - -printtoconsole=1
+            - -server=1
+            - -txindex=1
+            - -rest=1
+            - -rpcuser=admin1
+            - -rpcpassword=123
+            - -rpcallowip=0.0.0.0/0
+            - -rpcbind=0.0.0.0
+            - -fallbackfee=0.00001
+            - -zmqpubrawtx=tcp://0.0.0.0:28333
+            - -zmqpubhashblock=tcp://0.0.0.0:28333
+            - -blockfilterindex=1
+            - -peerblockfilters=1
+          volumeMounts:
+            - name: bitcoin-core-pv-storage
+              mountPath: "/home/bitcoin/.bitcoin"
+          ports:
+            - containerPort: 8332
+              name: p2p
+            - containerPort: 28333
+              name: zmq
+            - containerPort: 18332
+              name: rpc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitcoin-core-service
+  labels:
+    tier: bitcoin
+spec:
+  selector:
+    app: bitcoin-core-app
+    tier: bitcoin
+  ports:
+    - name: p2p
+      port: 8332
+      targetPort: 8332
+    - name: zmq
+      port: 28333
+      targetPort: 28333
+    - name: rpc
+      port: 18332
+      targetPort: 18332

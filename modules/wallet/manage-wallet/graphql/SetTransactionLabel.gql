@@ -1,0 +1,6 @@
+mutation SetTransactionLabel($txHash: String!, $label: String!) {
+  setTransactionLabel(txHash: $txHash, label: $label) {
+    txHash
+    label
+  }
+}

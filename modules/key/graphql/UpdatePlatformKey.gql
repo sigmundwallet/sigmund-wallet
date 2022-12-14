@@ -1,0 +1,8 @@
+mutation UpdatePlatformKey($input: UpdatePlatformKeyInput!) {
+  updatePlatformKey(input: $input) {
+    id
+    quizQuestions
+    verificationPediod
+    verificationType
+  }
+}

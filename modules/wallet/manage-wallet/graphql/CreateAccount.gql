@@ -1,0 +1,8 @@
+mutation createAccount($walletId: String!, $name: String) {
+  createAccount(walletId: $walletId, name: $name) {
+    walletId
+    index
+    name
+    receiveBitcoinAddress
+  }
+}

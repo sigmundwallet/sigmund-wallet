@@ -1,0 +1,18 @@
+subscription StreamBitcoinChainInfo {
+  bitcoinChainInfo {
+    updatedAt
+    feeRates
+    id
+    usdPrice
+  }
+}
+
+query GetBitcoinChainInfo {
+  bitcoinChainInfo {
+    updatedAt
+    feeRates
+    id
+    usdPrice
+    lastBlock
+  }
+}
